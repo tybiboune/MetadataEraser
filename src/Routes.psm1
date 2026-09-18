@@ -117,8 +117,11 @@ function Register-AppRoutes {
     Add-ApiRoute -Method 'GET' -Path '/api/update/check' -Handler {
         param($Request, $Response, $AppState)
         try {
-            $tree = Get-RemoteTree -Owner $script:UpdateOwner -Repo $script:UpdateRepo -Branch $script:UpdateBranch
-            $changed = Get-AppUpdatePlan -AppRoot $script:AppRoot -RemoteTree $tree
+            $tree = @(Get-RemoteTree -Owner $script:UpdateOwner -Repo $script:UpdateRepo -Branch $script:UpdateBranch)
+            # @()-wrap at the call site, not just inside the function - a single changed file
+            # would otherwise unwrap to a bare PSCustomObject when captured here, and .Count
+            # would throw under Set-StrictMode (this bit us before, see UpdateChecker.Tests.ps1).
+            $changed = @(Get-AppUpdatePlan -AppRoot $script:AppRoot -RemoteTree $tree)
             Send-JsonResponse -Response $Response -StatusCode 200 -Object @{
                 upToDate     = ($changed.Count -eq 0)
                 changedFiles = @($changed | ForEach-Object { $_.Path })
@@ -132,8 +135,8 @@ function Register-AppRoutes {
     Add-ApiRoute -Method 'POST' -Path '/api/update/apply' -Handler {
         param($Request, $Response, $AppState)
         try {
-            $tree = Get-RemoteTree -Owner $script:UpdateOwner -Repo $script:UpdateRepo -Branch $script:UpdateBranch
-            $changed = Get-AppUpdatePlan -AppRoot $script:AppRoot -RemoteTree $tree
+            $tree = @(Get-RemoteTree -Owner $script:UpdateOwner -Repo $script:UpdateRepo -Branch $script:UpdateBranch)
+            $changed = @(Get-AppUpdatePlan -AppRoot $script:AppRoot -RemoteTree $tree)
             if ($changed.Count -eq 0) {
                 Send-JsonResponse -Response $Response -StatusCode 200 -Object @{ ok = $true; applied = @(); backendChanged = $false; frontendChanged = $false }
                 return

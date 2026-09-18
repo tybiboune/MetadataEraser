@@ -126,6 +126,28 @@ Describe "UpdateChecker - Get-AppUpdatePlan" {
     Remove-Item -Path $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
 }
 
+Describe "UpdateChecker - Get-AppUpdatePlan with exactly one changed file" {
+    # Regression test: PowerShell unwraps a single-element array to a bare object when a
+    # function's output is captured by the caller, even if the function itself wrapped its
+    # return value in @() - only wrapping *at the call site* (as Routes.psm1 now does)
+    # actually prevents it. This must be tested with exactly one match, since two or more
+    # changed files never trigger the unwrap and would hide the bug.
+    $tempRoot = New-TempAppRoot
+    $localMap = Get-LocalAppFileMap -AppRoot $tempRoot
+    $remoteTree = @(
+        [pscustomobject]@{ path = 'src/App.ps1'; sha = $localMap['src/App.ps1']; type = 'blob' } # unchanged
+        [pscustomobject]@{ path = 'web/index.html'; sha = 'deadbeef0000000000000000000000000000dead'; type = 'blob' } # the one change
+    )
+
+    It "is still countable (not unwrapped to a bare object) via the exact call pattern Routes.psm1 uses" {
+        $plan = @(Get-AppUpdatePlan -AppRoot $tempRoot -RemoteTree $remoteTree)
+        $plan.Count | Should Be 1
+        $plan[0].Path | Should Be 'web/index.html'
+    }
+
+    Remove-Item -Path $tempRoot -Recurse -Force -ErrorAction SilentlyContinue
+}
+
 Describe "UpdateChecker - Invoke-AppUpdate" {
     $tempRoot = New-TempAppRoot
 
