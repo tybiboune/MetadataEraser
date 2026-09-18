@@ -162,8 +162,12 @@ function Register-AppRoutes {
         # window where the app is unreachable other than the handoff itself.
         try {
             $appScript = Join-Path $script:AppRoot 'src\App.ps1'
+            # Start-Process's -ArgumentList does NOT reliably quote an element containing
+            # spaces on its own (verified empirically - a path like "...\Metadata Eraser\..."
+            # gets silently truncated at the space and powershell.exe fails with "-File" not
+            # recognized), so the path needs its own literal quotes embedded here.
             Start-Process -FilePath 'powershell.exe' -ArgumentList @(
-                '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $appScript, '-Port', $script:Port, '-Relaunched'
+                '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$appScript`"", '-Port', $script:Port, '-Relaunched'
             ) -WindowStyle Hidden
             Send-JsonResponse -Response $Response -StatusCode 200 -Object @{ ok = $true; restarting = $true }
             $AppState.StopRequested = $true

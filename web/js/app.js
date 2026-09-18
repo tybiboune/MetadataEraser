@@ -125,7 +125,7 @@
     el.className = 'toast' + (kind ? ` toast-${kind}` : '');
     el.textContent = message;
     toastsEl.appendChild(el);
-    setTimeout(() => el.remove(), 4200);
+    setTimeout(() => el.remove(), 5600);
   }
 
   // ---------------- Helpers ----------------
@@ -316,6 +316,7 @@
   // ---------------- Completion celebration ----------------
   const celebrationEl = document.getElementById('celebration');
   const celebrationLineEl = document.getElementById('celebrationLine');
+  const celebrationSeedsEl = document.getElementById('celebrationSeeds');
   const poeticLines = [
     'No longer remembers where it came from.',
     'Every trace, let go on the wind.',
@@ -325,19 +326,61 @@
     'Nothing hidden. Nothing left to find.',
     'Unburdened, and a little lighter.',
   ];
+  const PARTICLE_COUNT = 22;
+  const particleColors = ['var(--lavender-fg)', 'var(--mint-fg)', 'var(--peach-fg)', 'var(--sky-fg)', 'var(--accent-strong)'];
+  const seedSvgMarkup = '<svg viewBox="0 0 16 16" width="100%" height="100%"><g stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M8 8 8 2"/><path d="M8 8 12 4"/><path d="M8 8 4 4"/><path d="M8 8 11 8"/><path d="M8 8 5 8"/></g></svg>';
+
+  function spawnSeedParticles() {
+    if (!celebrationSeedsEl) return;
+    celebrationSeedsEl.innerHTML = '';
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const el = document.createElement('div');
+      el.className = 'seed';
+      el.innerHTML = seedSvgMarkup;
+      // Scatter starting points loosely around the dandelion's whole fluffy head (roughly
+      // (60,46) in the 120x92 scene) rather than one point, then send each one drifting up
+      // and outward at its own angle/speed/delay - a slow, staggered release on the breeze
+      // rather than a single synchronized burst.
+      const startX = 44 + Math.random() * 32;
+      const startY = 24 + Math.random() * 28;
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 70 + Math.random() * 110;
+      const dx = Math.cos(angle) * distance;
+      const dy = -Math.abs(Math.sin(angle) * distance) - 30;
+      const rot = (Math.random() - 0.5) * 150;
+      const duration = 4.5 + Math.random() * 2.8;
+      const delay = Math.random() * 1.6;
+      const scale = 0.65 + Math.random() * 0.75;
+      el.style.left = `${startX}px`;
+      el.style.top = `${startY}px`;
+      el.style.color = particleColors[Math.floor(Math.random() * particleColors.length)];
+      el.style.setProperty('--dx', `${dx}px`);
+      el.style.setProperty('--dy', `${dy}px`);
+      el.style.setProperty('--rot', `${rot}deg`);
+      el.style.setProperty('--dur', `${duration}s`);
+      el.style.setProperty('--delay', `${delay}s`);
+      el.style.setProperty('--scale', scale.toFixed(2));
+      celebrationSeedsEl.appendChild(el);
+    }
+  }
+
   let celebrationTimer = null;
   function celebrateCompletion() {
     if (!celebrationEl) return;
     celebrationLineEl.textContent = poeticLines[Math.floor(Math.random() * poeticLines.length)];
+    spawnSeedParticles();
     celebrationEl.hidden = false;
     celebrationEl.classList.remove('play');
     void celebrationEl.offsetWidth; // restart the CSS animation on repeat triggers
     celebrationEl.classList.add('play');
     clearTimeout(celebrationTimer);
+    // Long enough to comfortably outlast the slowest particle (up to ~1.6s delay + ~7.3s
+    // drift) and, more importantly, give the poetic line itself plenty of time to be read -
+    // it was disappearing too quickly before.
     celebrationTimer = setTimeout(() => {
       celebrationEl.hidden = true;
       celebrationEl.classList.remove('play');
-    }, 3400);
+    }, 9500);
   }
 
   // ---------------- Upload / processing ----------------

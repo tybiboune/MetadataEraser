@@ -97,7 +97,11 @@ try {
         if ($edge) {
             $edgeProfileDir = Join-Path $env:TEMP 'MetadataEraser_EdgeProfile'
             New-Item -ItemType Directory -Path $edgeProfileDir -Force | Out-Null
-            $edgeArgs = @("--app=http://127.0.0.1:$Port/", "--user-data-dir=$edgeProfileDir", '--no-first-run', '--window-size=1180,840')
+            # Start-Process's -ArgumentList doesn't reliably quote an element containing a
+            # space on its own (%TEMP% commonly has one, e.g. "C:\Users\John Smith\..."),
+            # so --user-data-dir's value needs its own literal quotes embedded here - same
+            # issue as the self-update restart's -File path, see the note there.
+            $edgeArgs = @("--app=http://127.0.0.1:$Port/", "--user-data-dir=`"$edgeProfileDir`"", '--no-first-run', '--window-size=1180,840')
             Start-Process -FilePath $edge -ArgumentList $edgeArgs | Out-Null
             Write-Host 'Opened Edge app window.'
         }

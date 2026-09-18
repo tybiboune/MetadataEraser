@@ -675,23 +675,27 @@ body {
 
 .celebration-scene .dandelion { position: absolute; inset: 0; }
 
+/* Particles are generated fresh in JS each time the celebration plays (see
+   celebrateCompletion/spawnSeedParticles in app.js), each with its own randomized
+   --dx/--dy/--rot/--dur/--delay/--scale so "lots of them" never means "visibly repeating". */
+.seed-field {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+
 .seed {
   position: absolute;
-  width: 16px;
-  height: 16px;
-  color: var(--accent-strong);
+  width: 15px;
+  height: 15px;
   top: 30px;
   opacity: 0;
+  transform-origin: center;
+  animation: seed-drift var(--dur, 4.5s) cubic-bezier(0.22, 0.61, 0.36, 1) var(--delay, 0s) both;
 }
-.seed-1 { left: 58px; }
-.seed-2 { left: 68px; top: 26px; }
-.seed-3 { left: 48px; top: 34px; }
-.seed-4 { left: 76px; top: 34px; }
-.seed-5 { left: 40px; top: 40px; }
-.seed-6 { left: 62px; top: 20px; }
 
 .celebration-line {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 500;
@@ -701,25 +705,16 @@ body {
 }
 
 .celebration.play .celebration-line {
-  animation: line-in 1.1s ease 0.5s both;
+  animation: line-in 1.4s ease 0.5s both;
 }
 
-.celebration.play .seed {
-  animation: seed-drift 2.6s ease-out both;
-}
-.celebration.play .seed-1 { animation-delay: 0.05s; --dx: -34px; --dy: -70px; --rot: -35deg; }
-.celebration.play .seed-2 { animation-delay: 0.2s; --dx: 20px; --dy: -78px; --rot: 20deg; }
-.celebration.play .seed-3 { animation-delay: 0.12s; --dx: -54px; --dy: -46px; --rot: -60deg; }
-.celebration.play .seed-4 { animation-delay: 0.32s; --dx: 46px; --dy: -54px; --rot: 45deg; }
-.celebration.play .seed-5 { animation-delay: 0.0s; --dx: -18px; --dy: -84px; --rot: -15deg; }
-.celebration.play .seed-6 { animation-delay: 0.25s; --dx: 8px; --dy: -88px; --rot: 10deg; }
-
-.celebration.play .dandelion { animation: dandelion-sway 2.6s ease-in-out both; }
+.celebration.play .dandelion { animation: dandelion-sway 3.2s ease-in-out both; }
 
 @keyframes seed-drift {
-  0% { opacity: 0; transform: translate(0, 0) rotate(0deg) scale(0.8); }
-  12% { opacity: 0.9; transform: translate(calc(var(--dx) * 0.15), calc(var(--dy) * 0.1)) rotate(calc(var(--rot) * 0.2)) scale(1); }
-  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(0.9); }
+  0% { opacity: 0; transform: translate(0, 0) rotate(0deg) scale(var(--scale, 1)); }
+  10% { opacity: 0.85; transform: translate(calc(var(--dx) * 0.12), calc(var(--dy) * 0.08)) rotate(calc(var(--rot) * 0.15)) scale(var(--scale, 1)); }
+  70% { opacity: 0.6; }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(calc(var(--scale, 1) * 0.85)); }
 }
 
 @keyframes dandelion-sway {
@@ -791,7 +786,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .ambient-blob, .drift, .icon-btn, .spinner { animation: none !important; }
-  .celebration.play .seed {
+  .seed {
     animation: seed-fade 1s ease both;
     transform: none;
   }
