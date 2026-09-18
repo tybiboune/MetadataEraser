@@ -1,0 +1,5 @@
+# Portable distribution build - rebuilt from source on demand, not tracked.
+MetadataEraser.zip
+
+# Edge app-mode profile the app creates at runtime (outside this repo, but just in case).
+MetadataEraser_EdgeProfile/

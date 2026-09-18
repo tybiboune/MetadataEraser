@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metadata Eraser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <div class="ambient" aria-hidden="true">
+      <span class="ambient-blob ambient-blob-a"></span>
+      <span class="ambient-blob ambient-blob-b"></span>
+      <span class="ambient-blob ambient-blob-c"></span>
+    </div>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+            <path d="M19.5 4.5c-6.5.3-12.8 4.6-14.6 13.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            <path d="M19.5 4.5c-2 5-5.6 9.4-10.2 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            <path d="M13.5 9.2 10.6 11.6M15.6 7 12.7 9.5M17.6 4.8l-2.7 2.3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+            <path d="M9 17.5 4.9 19.3l1.6-4.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <div class="brand-text">
+          <h1>Metadata Eraser</h1>
+          <p>Strip EXIF, XMP, C2PA &amp; AI-generation metadata from PNG / JPEG</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button id="updateBtn" class="icon-btn" type="button" aria-label="Check for updates" title="Check for updates">
+          <svg class="icon-update" viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M20 11a8 8 0 1 0-2.3 5.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M20 5v6h-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span id="updateDot" class="update-dot" hidden></span>
+        </button>
+        <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle theme" title="Toggle light / dark theme">
+          <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M12 4V2m0 20v-2M4 12H2m20 0h-2M5.6 5.6 4.2 4.2m15.6 1.4 1.4-1.4M5.6 18.4l-1.4 1.4m15.6-1.4 1.4 1.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.6"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3a7 7 0 0 0 11.5 11.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="content">
+      <label class="option-row" for="convertToggle">
+        <input type="checkbox" id="convertToggle">
+        <span class="option-row-text">
+          <span class="option-row-title">Convert PNG to JPEG after cleaning</span>
+          <span class="option-row-sub">Flattens transparency onto white — JPEG has no alpha channel</span>
+        </span>
+      </label>
+
+      <section id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Drop images here or click to choose files">
+        <svg class="drift drift-sparkle" viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+          <path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l2.6 2.6M15.4 15.4 18 18M18 6l-2.6 2.6M8.6 15.4 6 18" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+        </svg>
+        <svg class="drift drift-feather" viewBox="0 0 24 24" width="26" height="26" fill="none" aria-hidden="true">
+          <path d="M19.5 4.5c-6.5.3-12.8 4.6-14.6 13.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          <path d="M19.5 4.5c-2 5-5.6 9.4-10.2 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          <path d="M9 17.5 4.9 19.3l1.6-4.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="dropzone-inner">
+          <svg class="dropzone-icon" viewBox="0 0 24 24" width="34" height="34" fill="none">
+            <path d="M12 15V4m0 0 4 4m-4-4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p class="dropzone-title">Drag &amp; drop your images</p>
+          <p class="dropzone-sub">PNG or JPEG · or <span class="link-like">browse your files</span> · nothing leaves this device</p>
+        </div>
+        <input id="fileInput" type="file" accept="image/png,image/jpeg" multiple hidden>
+      </section>
+
+      <section id="results" class="results" hidden>
+        <div class="results-toolbar">
+          <div class="results-summary" id="resultsSummary"></div>
+          <div class="results-actions">
+            <button id="addMoreBtn" class="btn btn-ghost" type="button">Add more</button>
+            <button id="convertAllBtn" class="btn btn-ghost" type="button" disabled>Convert PNGs to JPEG</button>
+            <button id="clearBtn" class="btn btn-ghost" type="button">Clear</button>
+            <button id="downloadAllBtn" class="btn btn-primary" type="button" disabled>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M12 15V4m0 11 4-4m-4 4-4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Download all (.zip)
+            </button>
+          </div>
+        </div>
+        <div id="celebration" class="celebration" hidden aria-live="polite">
+          <div class="celebration-scene" aria-hidden="true">
+            <svg class="dandelion" viewBox="0 0 120 92" fill="none">
+              <path d="M60 90V52" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              <path d="M60 78c-3-5-3-9 0-14" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+              <g stroke="currentColor" stroke-width="1" stroke-linecap="round">
+                <path d="M60 46 60 14"/>
+                <path d="M60 46 78 20"/>
+                <path d="M60 46 94 34"/>
+                <path d="M60 46 60 46"/>
+                <path d="M60 46 82 58"/>
+                <path d="M60 46 66 72"/>
+                <path d="M60 46 40 66"/>
+                <path d="M60 46 26 46"/>
+                <path d="M60 46 34 24"/>
+              </g>
+              <circle cx="60" cy="46" r="2" fill="currentColor"/>
+            </svg>
+            <svg class="seed seed-1" viewBox="0 0 16 16"><g stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M8 8 8 2"/><path d="M8 8 12 4"/><path d="M8 8 4 4"/></g></svg>
+            <svg class="seed seed-2" viewBox="0 0 16 16"><g stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M8 8 8 2"/><path d="M8 8 12 4"/><path d="M8 8 4 4"/></g></svg>
+            <svg class="seed seed-3" viewBox="0 0 16 16"><g stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M8 8 8 2"/><path d="M8 8 12 4"/><path d="M8 8 4 4"/></g></svg>
+            <svg class="seed seed-4" viewBox="0 0 16 16"><g stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M8 8 8 2"/><path d="M8 8 12 4"/><path d="M8 8 4 4"/></g></svg>
+            <svg class="seed seed-5" viewBox="0 0 16 16"><g stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M8 8 8 2"/><path d="M8 8 12 4"/><path d="M8 8 4 4"/></g></svg>
+            <svg class="seed seed-6" viewBox="0 0 16 16"><g stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M8 8 8 2"/><path d="M8 8 12 4"/><path d="M8 8 4 4"/></g></svg>
+          </div>
+          <p class="celebration-line" id="celebrationLine"></p>
+        </div>
+        <ul id="fileList" class="file-list"></ul>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Processed locally by the PowerShell backend on <code>127.0.0.1</code> — files are never sent anywhere else.</span>
+    </footer>
+  </div>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <template id="fileCardTemplate">
+    <li class="file-card">
+      <div class="file-card-main">
+        <div class="file-icon" data-role="icon"></div>
+        <div class="file-info">
+          <p class="file-name" data-role="name"></p>
+          <p class="file-meta" data-role="meta"></p>
+          <div class="chip-row" data-role="chips"></div>
+        </div>
+        <div class="file-status" data-role="status"></div>
+        <button class="btn btn-icon-only" data-role="inspect" type="button" title="View full original metadata" aria-label="View full original metadata" aria-expanded="false" hidden>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <button class="btn btn-icon-only" data-role="download" type="button" title="Download cleaned file" aria-label="Download cleaned file">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M12 15V4m0 11 4-4m-4 4-4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="metadata-inspector" data-role="inspector" hidden>
+        <div class="metadata-inspector-head">
+          <span>Full original metadata</span>
+          <span class="metadata-inspector-count" data-role="inspector-count"></span>
+        </div>
+        <dl class="metadata-table" data-role="inspector-body"></dl>
+      </div>
+    </li>
+  </template>
+
+  <script src="/js/zip.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+# Force LF everywhere, regardless of a cloning machine's core.autocrlf. The self-updater
+# hashes files exactly as they sit on disk and compares that to the git blob SHA (which is
+# always LF-normalized) - if checkout silently rewrote these to CRLF, every file would look
+# "changed" forever even when it isn't.
+* text=auto eol=lf
